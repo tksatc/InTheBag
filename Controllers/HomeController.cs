@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using InTheBag.Models;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace InTheBag.Controllers
 {
@@ -53,6 +54,7 @@ namespace InTheBag.Controllers
             return View();
         }
 
+        // Object data that was not submitted by a form
         public IActionResult WishIndex()
         {
             Wishes myWishes = new Wishes { ID = 1, wish1 = "Wisdom", wish2 = "Health", wish3 = "Happiness" };
@@ -66,11 +68,28 @@ namespace InTheBag.Controllers
             return View();
         }
 
+        /*
+        // Object data submitted by a form
         [HttpPost]
         public IActionResult NewWishIndex(Wishes model)
         {
             Wishes myWishes = new Wishes { ID = 2, wish1 = model.wish1, wish2 = model.wish2, wish3 = model.wish3 };
             string jsonWishes = Newtonsoft.Json.JsonConvert.SerializeObject(myWishes);
+            HttpContext.Session.SetString("wish", jsonWishes);
+            return View("WishIndex");
+        }
+        */
+
+        [HttpPost]
+        public IActionResult NewWishIndex(int? ID)
+        {
+            Wishes myWishes = new Wishes
+            {
+                ID = 2,
+                wish1 = Request.Form["wish1"],
+                wish2 = Request.Form["wish2"],
+                wish3 = Request.Form["wish3"]};
+            string jsonWishes = JsonConvert.SerializeObject(myWishes);
             HttpContext.Session.SetString("wish", jsonWishes);
             return View("WishIndex");
         }
